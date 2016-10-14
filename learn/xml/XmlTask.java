@@ -31,7 +31,7 @@ public class XmlTask {
     }
     
     private Document doc;
-    private final String path ="src/PO41/Koval/wdad/learn/xml/housekeeper.xml";
+    private final String path ="src/PO41/Koval/wdad/learn/xml/building.xml";
     
     public XmlTask()  throws IOException, ParserConfigurationException, SAXException{
         generateDocument();
@@ -197,6 +197,7 @@ public class XmlTask {
         NodeList buildings = doc.getElementsByTagName("building");
         NodeList flats = getFlatsBuild(buildings, street, buildingNumber);
         NamedNodeMap flatsAttributes;
+        if (flats != null){
         for (int i = 0; i < flats.getLength(); i++) {
             flatsAttributes = flats.item(i).getAttributes();
             if(Integer.valueOf(flatsAttributes.getNamedItem("number").getNodeValue()) == flatNumber){
@@ -225,6 +226,7 @@ public class XmlTask {
                 flats.item(i).appendChild(newRegestration);
                 updateDocument();
             }
+        }
         }
     }
 }

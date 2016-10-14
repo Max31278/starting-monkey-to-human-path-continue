@@ -14,8 +14,8 @@ public class TestXmlTask {
         try {
             XmlTask test = new XmlTask();
             test.setTariffs("electricity", 10.5);
-            System.out.println(test.getBill("Specialistov", 11, 11));
-            test.addRegistration("Specialistov", 20, 1, 2016, 2, 339, 226, 159, 125);
+            System.out.println(test.getBill("Specialistov", 1, 11));
+            test.addRegistration("Specialistov", 1, 11, 2016, 4, 339, 226, 159, 125);
         } catch (Exception e) {
             e.printStackTrace();
         }

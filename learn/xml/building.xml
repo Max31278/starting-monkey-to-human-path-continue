@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE configuration SYSTEM "housekeeper.dtd">
-<configuration>
-	<housekeeper>
-		<tariffs coldwater="32" hotwater="124" electricity="6.18" gas="3.20" ></tariffs>
-		<building street="Специалистов" number="11" flatsquantity="15">
-			<flat number="11" personsquantity="2" area="30" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE housekeeper SYSTEM "housekeeper.dtd">
+<housekeeper>
+		<tariffs coldwater="32" electricity="10.5" gas="3.20" hotwater="124"/>
+		<buildings flatsquantity="15" number="11" street="Specialistov">
+			<flat area="30" number="11" personsquantity="2">
 				<registration month="6" year="2016">
 					<coldwater>420</coldwater>
 					<hotwater>125</hotwater>
@@ -30,7 +29,7 @@
 					<gas>164</gas>
 				</registration>
 			</flat>
-			<flat number="12" personsquntity="4" area="45" >
+			<flat area="45" number="12" personsquantity="4">
 				<registration month="6" year="2016">
 					<coldwater>560</coldwater>
 					<hotwater>140</hotwater>
@@ -56,7 +55,7 @@
 					<gas>235</gas>
 				</registration>
 			</flat>
-			<flat number="13" personsquntity="3" area="45">
+			<flat area="45" number="13" personsquantity="3">
 				<registration month="6" year="2016">
 					<coldwater>475</coldwater>
 					<hotwater>110</hotwater>
@@ -82,6 +81,5 @@
 					<gas>180</gas>
 				</registration>
 			</flat>
-		</building>
-	</housekepper>
-</configuration>
+		</buildings>
+	</housekeeper>
