@@ -34,12 +34,9 @@ public class PreferencesManager {
     
         public boolean isCreateRegistry() {
         NodeList nodeList = doc.getElementsByTagName("createregistry");
-        if (nodeList.item(0).getTextContent().equals("yes")) {
+        if (nodeList.item(0).getTextContent().equals("yes"))
             return true;
-        } 
-        else {
-            return false;
-        }
+        return false;
     }
     
     private void generateDocument() throws IOException, ParserConfigurationException, SAXException {
