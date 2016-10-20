@@ -124,25 +124,19 @@ public class XmlTask {
         }
         return registration;
     }
-    
+     
     private Registration getRegistration(Node registrations){
         Registration reg = new Registration();
-        Node attributes;
-        for (int i=0; i< registrations.getChildNodes().getLength();i++){
-            attributes = registrations.getChildNodes().item(i);
-            if (attributes.getNodeName().equals("coldwater")){
-                reg.coldwaterRegistration = Integer.valueOf(attributes.getTextContent());
-            }
-            if (attributes.getNodeName().equals("hotwater")){
-                reg.hotwaterRegistration = Integer.valueOf(attributes.getTextContent());
-            }
-            if (attributes.getNodeName().equals("electricity")){
-                reg.electricityRegistration = Integer.valueOf(attributes.getTextContent());
-            }
-            if (attributes.getNodeName().equals("gas")){
-                reg.gasRegistration = Integer.valueOf(attributes.getTextContent());
-            }
-        }
+            NodeList coldwater = ((Element) registrations).getElementsByTagName("coldwater");
+            NodeList hotwater = ((Element) registrations).getElementsByTagName("hotwater");
+            NodeList electricity = ((Element) registrations).getElementsByTagName("electricity");
+            NodeList gas = ((Element) registrations).getElementsByTagName("gas");
+            
+            reg.coldwaterRegistration = Integer.valueOf(coldwater.item(0).getTextContent());
+            reg.hotwaterRegistration = Integer.valueOf(hotwater.item(0).getTextContent());
+            reg.electricityRegistration = Integer.valueOf(electricity.item(0).getTextContent());
+            reg.gasRegistration = Integer.valueOf(gas.item(0).getTextContent());
+
         return reg;            
     }
     
