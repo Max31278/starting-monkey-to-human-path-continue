@@ -18,6 +18,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.util.Properties;
+import javax.xml.xpath.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -38,7 +43,69 @@ public class PreferencesManager {
             return true;
         return false;
     }
+        
+    public void setProperty(String key, String value) throws IOException{
+        String[] tags = key.split("\\.");
+        NodeList node = doc.getElementsByTagName(tags[tags.length-1]);
+        node.item(0).setTextContent(value);
+        updateDoc();
+    }
     
+    public String getProperty(String key) throws IOException{
+        String[] tags = key.split("\\.");
+        NodeList node = doc.getElementsByTagName(tags[tags.length-1]);
+        return node.item(0).getTextContent();
+    }
+    
+    public void setProperties(Properties prop)throws IOException{
+        for (String key: prop.stringPropertyNames()){
+            setProperty(key, prop.getProperty(key));
+        }
+    }
+    
+    public Properties getProperties() throws IOException, XPathExpressionException{
+        Properties properties = new Properties();
+        String key, value;
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        String expression = "//*[not(*)]";
+        
+        NodeList node = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
+        for (int i = 0; i < node.getLength(); i++){
+            key = getNodePath(node.item(i));
+            value = getProperty(key);
+            properties.put(key, value);
+        }
+        return properties;  
+    }
+    
+    public void addBindedObject(String name, String className)throws IOException{
+         Element bindedObjectNode = doc.createElement("bindedobject");
+         bindedObjectNode.setAttribute("name", name);
+         bindedObjectNode.setAttribute("class", className);
+         doc.getElementsByTagName("server").item(0).appendChild(bindedObjectNode);
+         updateDoc();
+    }
+    
+    public void removeBindedObject(String name) throws IOException {
+         NodeList bindedObjectList = doc.getElementsByTagName("bindedobject");
+         NamedNodeMap bindedObjectListAttributs;
+         for (int i = 0; i < bindedObjectList.getLength(); i++) {
+             bindedObjectListAttributs = bindedObjectList.item(i).getAttributes();
+             if (bindedObjectListAttributs.getNamedItem("name").getNodeValue().equals(name)) {
+                 bindedObjectList.item(i).getParentNode().removeChild(bindedObjectList.item(i));
+             }
+         }
+         updateDoc();
+     }
+    
+    private static String getNodePath(Node node) {
+        Node parent = node.getParentNode();
+        
+        if (parent == null || parent.getNodeName().equals("#document")) {
+            return node.getNodeName();
+        }
+        return getNodePath(parent) + '.' + node.getNodeName();
+    }
     private void generateDocument() throws IOException, ParserConfigurationException, SAXException {
         File xmlFile = new File(path);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -64,6 +131,7 @@ public class PreferencesManager {
         return instance;
     }
     
+    @Deprecated
     public void setCreateRegistry(boolean createRegistry) throws IOException {
         NodeList nodeList = doc.getElementsByTagName("createregistry");
         if (createRegistry) {
@@ -75,39 +143,46 @@ public class PreferencesManager {
         updateDoc();
     }
     
+    @Deprecated
     public String getRegistryAddress() {
         NodeList nodeList = doc.getElementsByTagName("registryaddress");
         return nodeList.item(0).getTextContent();
     }
 
+    @Deprecated
     public void setRegistryAddress(String s) throws IOException {
         NodeList nodeList = doc.getElementsByTagName("registryaddress");
         nodeList.item(0).setTextContent(s);
         updateDoc();
     }
 
+    @Deprecated
     public int getRegistryPort() {
         NodeList nodeList = doc.getElementsByTagName("registryport");
         return Integer.parseInt(nodeList.item(0).getTextContent());
     }
 
+    @Deprecated
     public void setRegistryPort(int registryPort) throws IOException {
         NodeList nodeList = doc.getElementsByTagName("registryport");
         nodeList.item(0).setTextContent(String.valueOf(registryPort));
         updateDoc();
     }
     
+    @Deprecated
     public String getPolicyPath() {
         NodeList nodeList = doc.getElementsByTagName("policypath");
         return nodeList.item(0).getTextContent();
     }
 
+    @Deprecated
     public void setPolicyPath(String s) throws IOException {
         NodeList nodeList = doc.getElementsByTagName("policypath");
         nodeList.item(0).setTextContent(s);
         updateDoc();
     }
 
+    @Deprecated
     public boolean getUseCodeBaseOnly() {
         NodeList nodeList = doc.getElementsByTagName("usecodebaseonly");
         if (nodeList.item(0).getTextContent().equals("yes")) {
@@ -117,6 +192,7 @@ public class PreferencesManager {
         }
     }
 
+    @Deprecated
     public void setUseCodeBaseOnly(boolean useCodeBaseOnly) throws IOException {
         NodeList nodeList = doc.getElementsByTagName("usecodebaseonly");
         if (useCodeBaseOnly) {
@@ -127,11 +203,13 @@ public class PreferencesManager {
         updateDoc();
     }
 
+    @Deprecated
     public String getClassProvider() {
         NodeList nodeList = doc.getElementsByTagName("classprovider");
         return nodeList.item(0).getTextContent();
     }
 
+    @Deprecated
     public void setClassProvider(String classproviderURL) throws IOException {
         NodeList nodeList = doc.getElementsByTagName("classprovider");
         nodeList.item(0).setTextContent(classproviderURL);
