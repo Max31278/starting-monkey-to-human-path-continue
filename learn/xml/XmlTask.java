@@ -46,6 +46,7 @@ public class XmlTask {
     private void generateDocument() throws IOException, ParserConfigurationException, SAXException{
         File xmlFile = new File(path);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setIgnoringElementContentWhitespace(true);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         doc = dBuilder.parse(xmlFile);
     }
@@ -67,8 +68,8 @@ public class XmlTask {
         if (buildings != null) {
             for (int i=0; i < buildings.getLength(); i++) {
                 buildingAttributes = buildings.item(i).getAttributes();
-                if (buildingAttributes.getNamedItem("street").getNodeValue().equals(street)&&
-                        Integer.valueOf(buildingAttributes.getNamedItem("number").getNodeValue()) == buildingNumber){
+                if (buildingAttributes.getNamedItem("street").getTextContent().equals(street)&&
+                        Integer.valueOf(buildingAttributes.getNamedItem("number").getTextContent()) == buildingNumber){
                     flats = buildings.item(i).getChildNodes();
                 }
             }
@@ -82,8 +83,8 @@ public class XmlTask {
         if (flats != null){
             for (int i=0; i< flats.getLength(); i++){
                 flatsAttributes = flats.item(i).getAttributes();
-                if (Integer.valueOf(flatsAttributes.getNamedItem("number").getNodeValue()) == numberFlat) {
-                    registration = flats.item(i).getChildNodes();
+                if (Integer.valueOf(flatsAttributes.getNamedItem("number").getTextContent()) == numberFlat) {
+                    registration =((Element) flats.item(i)).getElementsByTagName("registration");
                 }
             }
         }
@@ -98,8 +99,8 @@ public class XmlTask {
             int lastMonthRegistration = 0;
             for (int i=0; i<registrations.getLength(); i++){
                 registrationsAttributes = registrations.item(i).getAttributes();
-                if(Integer.valueOf(registrationsAttributes.getNamedItem("year").getNodeValue()) >= lastYearRegistration &&
-                   Integer.valueOf(registrationsAttributes.getNamedItem("month").getNodeValue()) >= lastMonthRegistration){
+                if(Integer.valueOf(registrationsAttributes.getNamedItem("year").getTextContent()) >= lastYearRegistration &&
+                   Integer.valueOf(registrationsAttributes.getNamedItem("month").getTextContent()) >= lastMonthRegistration){
                     registration = registrations.item(i);
                 }
             }
@@ -113,8 +114,8 @@ public class XmlTask {
         if (registrations != null){
             for (int i=0; i<registrations.getLength(); i++){
                 registrationsAttributes = registrations.item(i).getAttributes();
-                if(Integer.valueOf(registrationsAttributes.getNamedItem("year").getNodeValue()) >= lastYearRegistration &&
-                   Integer.valueOf(registrationsAttributes.getNamedItem("month").getNodeValue()) >= lastMonthRegistration-1){
+                if(Integer.valueOf(registrationsAttributes.getNamedItem("year").getTextContent()) >= lastYearRegistration &&
+                   Integer.valueOf(registrationsAttributes.getNamedItem("month").getTextContent()) == (lastMonthRegistration-1)){
                     registration = registrations.item(i);
                 }
             }
@@ -122,8 +123,8 @@ public class XmlTask {
         if (registration == null){
             for (int i=0; i<registrations.getLength(); i++){
                 registrationsAttributes = registrations.item(i).getAttributes();
-                if(Integer.valueOf(registrationsAttributes.getNamedItem("year").getNodeValue()) >= lastYearRegistration - 1 &&
-                   Integer.valueOf(registrationsAttributes.getNamedItem("month").getNodeValue()) >= 12){
+                if(Integer.valueOf(registrationsAttributes.getNamedItem("year").getTextContent()) >= lastYearRegistration - 1 &&
+                   Integer.valueOf(registrationsAttributes.getNamedItem("month").getTextContent()) >= 12){
                     registration = registrations.item(i);
                 }
             }
@@ -161,8 +162,8 @@ public class XmlTask {
         int lastMonthRegistration = 0;
          if (lastRegistrations != null) {
              NamedNodeMap attributesRegistration = lastRegistrations.getAttributes();
-             lastYearRegistration = Integer.valueOf(attributesRegistration.getNamedItem("year").getNodeValue());
-             lastMonthRegistration = Integer.valueOf(attributesRegistration.getNamedItem("month").getNodeValue());
+             lastYearRegistration = Integer.valueOf(attributesRegistration.getNamedItem("year").getTextContent());
+             lastMonthRegistration = Integer.valueOf(attributesRegistration.getNamedItem("month").getTextContent());
              prevRegistrations = getPrevRegistration(registrations, lastYearRegistration, lastMonthRegistration);
          }
          
@@ -177,11 +178,11 @@ public class XmlTask {
          }
          
          NamedNodeMap tariffsAttributes = tariffs.item(0).getAttributes();
-         sum = reg.coldwaterRegistration * Double.parseDouble(tariffsAttributes.getNamedItem("coldwater").getNodeValue())+
-                 reg.hotwaterRegistration * Double.parseDouble(tariffsAttributes.getNamedItem("hotwater").getNodeValue())+
-                 reg.electricityRegistration * Double.parseDouble(tariffsAttributes.getNamedItem("electricity").getNodeValue())+
-                 reg.gasRegistration * Double.parseDouble(tariffsAttributes.getNamedItem("gas").getNodeValue());
-         
+         sum = reg.coldwaterRegistration * Double.parseDouble(tariffsAttributes.getNamedItem("coldwater").getTextContent())+
+                 reg.hotwaterRegistration * Double.parseDouble(tariffsAttributes.getNamedItem("hotwater").getTextContent())+
+                 reg.electricityRegistration * Double.parseDouble(tariffsAttributes.getNamedItem("electricity").getTextContent())+
+                 reg.gasRegistration * Double.parseDouble(tariffsAttributes.getNamedItem("gas").getTextContent());
+         double a = sum;
          return sum;
     }
     
@@ -194,29 +195,29 @@ public class XmlTask {
     
     public void addRegistration (String street, int buildingNumber, int flatNumber, int year, int month,
                                  double coldWater, double hotWater, double electricity, double gas) throws IOException {
-        NodeList buildings = doc.getElementsByTagName("building");
+        NodeList buildings = doc.getElementsByTagName("buildings");
         NodeList flats = getFlatsBuild(buildings, street, buildingNumber);
         NamedNodeMap flatsAttributes;
         if (flats != null){
         for (int i = 0; i < flats.getLength(); i++) {
             flatsAttributes = flats.item(i).getAttributes();
-            if(Integer.valueOf(flatsAttributes.getNamedItem("number").getNodeValue()) == flatNumber){
+            if(Integer.valueOf(flatsAttributes.getNamedItem("number").getTextContent()) == flatNumber){
                 Node newRegestration = doc.createElement("registration");
                 
                 ((Element)newRegestration).setAttribute("year", String.valueOf(year));
                 ((Element)newRegestration).setAttribute("month", String.valueOf(month));
                 
                 Node coldwater = doc.createElement("coldwater");
-                coldwater.setNodeValue(String.valueOf(coldWater));
+                coldwater.setTextContent(String.valueOf(coldWater));
                 
                 Node hotwater = doc.createElement("hotwater");
-                hotwater.setNodeValue(String.valueOf(hotWater));
+                hotwater.setTextContent(String.valueOf(hotWater));
                 
                 Node el = doc.createElement("electricity");
-                el.setNodeValue(String.valueOf(electricity));
+                el.setTextContent(String.valueOf(electricity));
                 
                 Node g = doc.createElement("gas");
-                g.setNodeValue(String.valueOf(gas));
+                g.setTextContent(String.valueOf(gas));
                 
                 newRegestration.appendChild(coldwater);
                 newRegestration.appendChild(hotwater);
@@ -239,9 +240,9 @@ public class XmlTask {
         ArrayList<Registration> regs = new ArrayList();
         
         for (int i=0; i< flats.getLength(); i++){
-            if (flats.item(i).getAttributes().getNamedItem("number").getNodeValue().equals(flatNumber)){
-                personsQuantity = Integer.valueOf(flats.item(i).getAttributes().getNamedItem("personsQuantity").getNodeValue());
-                area = Double.valueOf(flats.item(i).getAttributes().getNamedItem("area").getNodeValue());
+            if (flats.item(i).getAttributes().getNamedItem("number").getTextContent().equals(flatNumber)){
+                personsQuantity = Integer.valueOf(flats.item(i).getAttributes().getNamedItem("personsQuantity").getTextContent());
+                area = Double.valueOf(flats.item(i).getAttributes().getNamedItem("area").getTextContent());
             } 
         }
          
