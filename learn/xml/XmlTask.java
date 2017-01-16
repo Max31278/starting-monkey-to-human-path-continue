@@ -5,6 +5,9 @@
  */
 package PO41.Koval.wdad.learn.xml;
 
+import PO41.Koval.wdad.learn.rmi.Building;
+import PO41.Koval.wdad.learn.rmi.Flat;
+import PO41.Koval.wdad.learn.rmi.Registration;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,13 +20,16 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
  * @author 000
  */
 public class XmlTask {
-    private class Registration {
+    private class RegValues {
         public double coldwaterRegistration = 0;
         public double hotwaterRegistration = 0;
         public double electricityRegistration = 0;
@@ -125,8 +131,8 @@ public class XmlTask {
         return registration;
     }
      
-    private Registration getRegistration(Node registrations){
-        Registration reg = new Registration();
+    private RegValues getRegistration(Node registrations){
+        RegValues reg = new RegValues();
             NodeList coldwater = ((Element) registrations).getElementsByTagName("coldwater");
             NodeList hotwater = ((Element) registrations).getElementsByTagName("hotwater");
             NodeList electricity = ((Element) registrations).getElementsByTagName("electricity");
@@ -160,10 +166,10 @@ public class XmlTask {
              prevRegistrations = getPrevRegistration(registrations, lastYearRegistration, lastMonthRegistration);
          }
          
-         Registration reg = new Registration();
+         RegValues reg = new RegValues();
          if (lastRegistrations != null && prevRegistrations !=null){
-             Registration lastRegistration = getRegistration(lastRegistrations);
-             Registration prevRegistration = getRegistration(prevRegistrations);
+             RegValues lastRegistration = getRegistration(lastRegistrations);
+             RegValues prevRegistration = getRegistration(prevRegistrations);
              reg.coldwaterRegistration = lastRegistration.coldwaterRegistration-prevRegistration.coldwaterRegistration;
              reg.hotwaterRegistration = lastRegistration.hotwaterRegistration - prevRegistration.hotwaterRegistration;
              reg.electricityRegistration = lastRegistration.electricityRegistration - prevRegistration.electricityRegistration;
@@ -222,6 +228,40 @@ public class XmlTask {
             }
         }
         }
+    }
+    
+    public Flat getFlat(Building building, int flatNumber){
+        NodeList buildings = doc.getElementsByTagName("building");
+        NodeList flats = getFlatsBuild(buildings, building.getStreet(), building.getNumber());
+        NodeList registrations = getRegistrationFlat(flats, flatNumber);
+        int personsQuantity = 0;
+        double area = 0.0;
+        ArrayList<Registration> regs = new ArrayList();
+        
+        for (int i=0; i< flats.getLength(); i++){
+            if (flats.item(i).getAttributes().getNamedItem("number").getNodeValue().equals(flatNumber)){
+                personsQuantity = Integer.valueOf(flats.item(i).getAttributes().getNamedItem("personsQuantity").getNodeValue());
+                area = Double.valueOf(flats.item(i).getAttributes().getNamedItem("area").getNodeValue());
+            } 
+        }
+         
+        
+        for (int i =0; i< registrations.getLength(); i++){
+            NamedNodeMap regAttr = registrations.item(i).getAttributes();
+            int year = Integer.valueOf(regAttr.getNamedItem("year").getTextContent());
+            int month = Integer.valueOf(regAttr.getNamedItem("month").getTextContent());
+            
+            Date registrationDate = null;
+            registrationDate.setYear(year);
+            registrationDate.setMonth(month);
+            
+            RegValues regValue = getRegistration(registrations.item(i));
+            
+            Registration reg = new Registration(registrationDate, regValue.coldwaterRegistration, regValue.hotwaterRegistration, regValue.electricityRegistration, regValue.gasRegistration);
+            regs.add(reg);
+        }
+        Flat flat = new Flat(flatNumber, personsQuantity, area, regs);
+        return flat;
     }
 }
 
