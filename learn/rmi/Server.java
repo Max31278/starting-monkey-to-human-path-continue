@@ -35,7 +35,7 @@ public class Server {
             ex.printStackTrace();
         }
         
-        System.setProperty("java.rmi.server.codebase", PreferencesConstantManager.CLASS_PROVIDER);
+         
          System.setProperty("java.rmi.server.UseCodeBaseOnly", preferencesManager.getProperty(PreferencesConstantManager.USE_CODE_BASE_ONLY));
          System.setProperty("java.rmi.server.logCalls", "true");
          System.setProperty("java.security.policy", preferencesManager.getProperty(PreferencesConstantManager.POLICY_PATH));
@@ -58,8 +58,8 @@ public class Server {
              try{
                  System.out.println("exporting object ...");
                  XmlDataManagerImpl xmlDataManagerImpl = new XmlDataManagerImpl();
-                 UnicastRemoteObject.exportObject((Remote) xmlDataManagerImpl, XML_DATA_MANAGER_PORT);
-                 registry.rebind(XML_DATA_MANAGER, (Remote) xmlDataManagerImpl);
+                 UnicastRemoteObject.exportObject( xmlDataManagerImpl, XML_DATA_MANAGER_PORT);
+                 registry.rebind(XML_DATA_MANAGER, xmlDataManagerImpl);
                  preferencesManager.addBindedObject(XML_DATA_MANAGER, "PO41.Koval.wdad.learn.rmi.XmlDataMangerImpl");
                  System.out.println("Waiting ... ");
                  System.out.println("Input \"exit\" to close server.");

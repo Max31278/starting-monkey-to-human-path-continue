@@ -5,6 +5,7 @@
  */
 package PO41.Koval.wdad.learn.rmi;
  
+import PO41.Koval.wdad.data.managers.DataManager;
 import PO41.Koval.wdad.learn.xml.XmlTask;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -14,11 +15,14 @@ import java.util.logging.Logger;
  *
  * @author 000
  */
-public class XmlDataManagerImpl implements XmlDataManager{
+public class XmlDataManagerImpl  implements DataManager  {
     
-    private XmlTask xmlTask;
+    private XmlTask xmlTask = new XmlTask();
     
     public double getBill (Building building, int flatNumber){
+        Building c = building;
+        String a = building.getStreet();
+        int b = building.getNumber();
         return xmlTask.getBill(building.getStreet(), building.getNumber(), flatNumber);
     }
     public Flat getFlat (Building building, int flatNumber){

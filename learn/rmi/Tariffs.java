@@ -5,13 +5,14 @@
  */
 package PO41.Koval.wdad.learn.rmi;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  *
  * @author 000
  */
-public class Tariffs {
+public class Tariffs implements Serializable {
     static final HashMap<String,Double> VALUES = new HashMap<>();
     static final String COLDWATER_KEY = "coldwater";
     static final String HOTWATER_KEY = "hotwater";

@@ -5,13 +5,14 @@
  */
 package PO41.Koval.wdad.learn.rmi;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author 000
  */
-public class Flat {
+public class Flat implements Serializable {
     private int number;
     private int personsQuantity;
     private double area;

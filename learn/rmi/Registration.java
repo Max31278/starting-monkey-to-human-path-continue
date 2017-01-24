@@ -4,12 +4,13 @@
  * and open the template in the editor.
  */
 package PO41.Koval.wdad.learn.rmi;
+import java.io.Serializable;
 import java.util.Date;
 /**
  *
  * @author 000
  */
-public class Registration {
+public class Registration implements Serializable {
     private Date data;
     private double coldwater;
     private double hotwater;
