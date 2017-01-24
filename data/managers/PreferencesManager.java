@@ -30,7 +30,7 @@ import org.w3c.dom.Node;
  */
 public class PreferencesManager {
     private static PreferencesManager instance;
-    private final static String path = "src/PO41/Koval/wdad/resources/configurations/appconfig.xml";
+    private final static String path = "src/PO41/Koval/wdad/resources/configuration/appconfig.xml";
     private Document doc;
     
     private PreferencesManager() throws IOException, ParserConfigurationException, SAXException{
@@ -109,6 +109,7 @@ public class PreferencesManager {
     private void generateDocument() throws IOException, ParserConfigurationException, SAXException {
         File xmlFile = new File(path);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setIgnoringElementContentWhitespace(true);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         doc = dBuilder.parse(xmlFile);
     }
