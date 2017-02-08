@@ -22,10 +22,10 @@ import org.xml.sax.SAXException;
  *
  * @author 000
  */
-public class TariffsDAOImpl implements TariffsDAO{
+public class JDBCTariffsDAO implements TariffsDAO{
     private DataSource dataSource = null;
     
-    public TariffsDAOImpl(){
+    public JDBCTariffsDAO(){
        try {
             dataSource = DataSourceFactory.createDataSource();
         } catch (IOException e) {

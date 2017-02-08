@@ -88,7 +88,7 @@ public class JDBCFlatsDAO implements FlatsDAO {
                     ResultSet result = statement.executeQuery(query.toString());
                     result.next();
                     
-                    BuildingsJDBC building = new BuildingsJDBC();
+                    JDBCBuildingsDAO building = new JDBCBuildingsDAO();
                     Flat flat = new Flat();
                     flat.setArea(result.getDouble("area"));
                     flat.setBuilding(building.findBuilding(result.getInt("buildings_id")));

@@ -31,10 +31,10 @@ import org.xml.sax.SAXException;
  *
  * @author 000
  */
-public class BuildingsJDBC implements BuildingsDAO{
+public class JDBCBuildingsDAO implements BuildingsDAO{
     private DataSource dataSource= null;
    
-    public BuildingsJDBC(){
+    public JDBCBuildingsDAO(){
         try {
             dataSource = DataSourceFactory.createDataSource();
         } catch (IOException e) {
