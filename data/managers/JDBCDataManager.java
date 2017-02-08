@@ -57,12 +57,12 @@ LIMIT 0 , 30*/
             try (Connection connection = dataSource.getConnection()) {
                 Statement statement = connection.createStatement();
                 StringBuilder query = new StringBuilder(
-                        "SELECT registrations.id, registrations.date,  `registrations-tariffs`.id,  `registrations-tariffs`.amount, tariffs.name\n" +
+                        "SELECT registrations.id, registrations.date,  `registrations-tariffs`.id,  "
+                                + "`registrations-tariffs`.amount, tariffs.name, tariffs.cost\n" +
                         "FROM registrations,  `registrations-tariffs` , tariffs, street, buildings, flats\n" +
-                        "WHERE street.name='" + building.getStreet() + "' "+"AND buildings.number='"+ building.getNumber() +"' "+"AND number='" + flatNumber + "' " +
-                        "AND flats.id = flats_id\n" +
-                        "AND registrations.id = registrations_id\n" +
-                        "AND tariffs_name = tariffs.name");
+                        "WHERE street.name='" + building.getStreet() + "' AND buildings.number='"+ building.getNumber() +"' AND flats.number='" +
+                                flatNumber + "' AND flats.id = flats_id\n AND registrations.id = registrations_id\n" + 
+                        "AND tariffs_name = tariffs.name ORDER BY registrations.date DESC");
                             
                 ResultSet result = statement.executeQuery(query.toString());
                 result.next();
@@ -90,6 +90,7 @@ LIMIT 0 , 30*/
                     Integer.parseInt(dat[0]),
                     Integer.parseInt(dat[1]),
                     Integer.parseInt(dat[2]));
+                
                 RegistrationValues prevReg = new RegistrationValues();
                 prevReg.coldwaterReg =result.getInt("amount") * result.getFloat("cost");
                 result.next();
@@ -129,9 +130,9 @@ AND flats.number =13
                             .append("FROM flats,street,buildings ")
                             .append("WHERE street.name='"+ building.getStreet()+"'")
                             .append("AND buildings.number='"+ building.getNumber() +"' ")
-                            .append("AND number='" + flatNumber + "' ");
+                            .append("AND flats.number='" + flatNumber + "' ");
                 ResultSet result = statement.executeQuery(query.toString());
-                result.next();
+                if(result.next());
                 flat = new Flat(
                         result.getInt("number"), 
                         result.getInt("persons_quantity"),
@@ -169,15 +170,15 @@ AND flats.number =13
                             .append("FROM flats,street,buildings ")
                             .append("WHERE street.name='" + building.getStreet() + "' ")
                             .append("AND buildings.number='"+ building.getNumber() +"' ")
-                            .append("AND number='" + flatNumber + "' ");       
+                            .append("AND flats.number='" + flatNumber + "' ");       
                 ResultSet result = statement.executeQuery(getFlatIdQuery.toString());
                 result.next();
                 int flatId = result.getInt("id");
                 
                 StringBuilder query = new StringBuilder(
-                        "INSERT INTO registrations (date, flats_id) ")
-                            .append("VALUES('" + parseDate(registration.getData()) + "', ")
-                            .append(flatId + ")");                
+                        "INSERT INTO registrations (id, date, flats_id) ")
+                            .append("VALUES( NULL, '" + parseDate(registration.getData()) + "', ")
+                            .append("'"+flatId+"'" + ")");                
                 statement.executeUpdate(query.toString());
                 
                 StringBuilder getlastRegistrationIdQuery = new StringBuilder(
@@ -185,46 +186,48 @@ AND flats.number =13
                             .append("FROM registrations ")
                             .append("WHERE flats_id='" + flatId + "'"); 
                 ResultSet result1 = statement.executeQuery(getlastRegistrationIdQuery.toString());
-                result.next();
-                int registrationId = result1.getInt("id");
+                
+                result1.last();
+                 int registrationId= result1.getInt("id");
+                
 
                 StringBuilder addColdwater = new StringBuilder(
-                        "INSERT INTO registrations-tariffs (amount, registrations_id,tarrifs_name) ")
-                            .append("VALUES('" + registration.getColdwater() + "',")
-                            .append(registrationId + ",")
-                            .append("coldwater)");
+                        "INSERT INTO `registrations-tariffs` (id, amount, registrations_id,tariffs_name) ")
+                            .append("VALUES(NULL, '" + registration.getColdwater() + "',")
+                            .append("'"+registrationId+"'" + ",")
+                            .append("\"coldwater\")");
                 StringBuilder addHotwater = new StringBuilder(
-                        "INSERT INTO registrations-tariffs (amount, registrations_id,tarrifs_name) ")
-                            .append("VALUES('" + registration.getHotwater()+ "',")
-                            .append(registrationId + ",")
-                            .append("hotwater)");
+                        "INSERT INTO `registrations-tariffs` (id,amount, registrations_id,tariffs_name) ")
+                            .append("VALUES(NULL,'" + registration.getHotwater()+ "',")
+                            .append("'"+registrationId+"'" + ",")
+                            .append("\"hotwater\")");
                 StringBuilder addElectrocity = new StringBuilder(
-                        "INSERT INTO registrations-tariffs (amount, registrations_id,tarrifs_name) ")
-                            .append("VALUES('" + registration.getElectricity()+ "',")
-                            .append(registrationId + ",")
-                            .append("electricity)");
+                        "INSERT INTO `registrations-tariffs` (id, amount, registrations_id,tariffs_name) ")
+                            .append("VALUES(NULL,'" + registration.getElectricity()+ "',")
+                            .append("'"+registrationId+"'" + ",")
+                            .append("\"electrisity\")");
                 StringBuilder addGas = new StringBuilder(
-                        "INSERT INTO registrations-tariffs (amount, registrations_id,tarrifs_name) ")
-                            .append("VALUES('" + registration.getGas()+ "',")
-                            .append(registrationId + ",")
-                            .append("gas)");                
+                        "INSERT INTO `registrations-tariffs` (id, amount, registrations_id,tariffs_name) ")
+                            .append("VALUES(NULL,'" + registration.getGas()+ "',")
+                            .append("'"+registrationId+"'" + ",")
+                            .append("\"gas\")");                
                 statement.executeUpdate(addColdwater.toString());
                 statement.executeUpdate(addHotwater.toString());
                 statement.executeUpdate(addElectrocity.toString());
                 statement.executeUpdate(addGas.toString());
                 
             }
-        }catch (SQLException e){}
+        }catch (SQLException e){e.printStackTrace();}
     }
     
     private String parseDate(Date date){
         StringBuilder dateStr = new StringBuilder();
         dateStr.append(date.getYear()).append("-");
         
-        if(date.getMonth() + 1 < 10 ) 
+        if(date.getMonth() < 10 ) 
             dateStr.append("0");
         
-        dateStr.append(date.getMonth() + 1).append("-");
+        dateStr.append(date.getMonth()).append("-");
         if(date.getDay() < 10) 
             dateStr.append("0");
         
