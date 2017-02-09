@@ -27,10 +27,10 @@ import org.xml.sax.SAXException;
  *
  * @author 000
  */
-public class JDBCRegistrationsDAO implements RegistrationsDAO {
+public class RegistrationsDAOImpl implements RegistrationsDAO {
     private DataSource dataSource= null;
    
-    public JDBCRegistrationsDAO(){
+    public RegistrationsDAOImpl(){
         try {
             dataSource = DataSourceFactory.createDataSource();
         } catch (IOException e) {
@@ -50,6 +50,7 @@ public class JDBCRegistrationsDAO implements RegistrationsDAO {
                                     registration.getDate().getYear()+"-"+registration.getDate().getMonth()+"-"
                                     +registration.getDate().getDate()+"','"+registration.getFlat().getId()+"')");
                             statement.executeUpdate(addRegistration.toString());
+                            if (registration.getAmounts()!=null)
                             for (Map.Entry<Tariff, Double> amount : registration.getAmounts().entrySet()){
                                 StringBuilder addRegistrationTariffs = new StringBuilder("INSERT INTO `registrations-tariffs` "
                                         + "(id, amount, registrations_id,tariffs_name) VALUES(NULL,'"+amount.getValue()+"','"+registration.getId()+"','"
@@ -88,7 +89,7 @@ public class JDBCRegistrationsDAO implements RegistrationsDAO {
                 StringBuilder findRegistration = new StringBuilder("SELECT * FROM registrations WHERE id='"+id+"'");
                 ResultSet result = statement.executeQuery(findRegistration.toString());
                 result.next();
-                JDBCFlatsDAO flat = new JDBCFlatsDAO();
+                FlatsDAOImpl flat = new FlatsDAOImpl();
                 Registration registration = new Registration();
                 String date = result.getDate("date").toString();
                 String[] data = date.split("-");
@@ -118,6 +119,7 @@ public class JDBCRegistrationsDAO implements RegistrationsDAO {
                         +"-"+month+"-"+date
                         +"', flats_id='"+registration.getFlat().getId()+"' WHERE id='"+registration.getId()+"'");
                 statement.executeUpdate(updateRegistration.toString());
+                if (registration.getAmounts()!=null)
                 for (Map.Entry<Tariff, Double> amount : registration.getAmounts().entrySet()){
                                 StringBuilder updateRegistrationTariffs = new StringBuilder("UPDATE `registrations-tariffs` SET amount='"+amount.getValue()
                                 +"', tariffs_name='"+amount.getKey().getName()+"' WHERE registrations_id='"+registration.getId()+"'");
@@ -150,7 +152,7 @@ public class JDBCRegistrationsDAO implements RegistrationsDAO {
     }
     public Collection<Registration> findRegistrationsByDate (Date date){
         Collection<Registration> registrations = new LinkedList();
-        JDBCFlatsDAO flat = new JDBCFlatsDAO();
+        FlatsDAOImpl flat = new FlatsDAOImpl();
         try (Connection connection = dataSource.getConnection()) {
                 Statement statement = connection.createStatement();
                 StringBuilder findRegistration = new StringBuilder("SELECT * FROM registrations WHERE date='"+date.getYear()+"-"+date.getMonth()

@@ -31,10 +31,10 @@ import org.xml.sax.SAXException;
  *
  * @author 000
  */
-public class JDBCBuildingsDAO implements BuildingsDAO{
+public class BuildingsDAOImpl implements BuildingsDAO{
     private DataSource dataSource= null;
    
-    public JDBCBuildingsDAO(){
+    public BuildingsDAOImpl(){
         try {
             dataSource = DataSourceFactory.createDataSource();
         } catch (IOException e) {
@@ -58,8 +58,9 @@ public class JDBCBuildingsDAO implements BuildingsDAO{
                     StringBuilder addBuilding = new StringBuilder(
                             "INSERT INTO buildings (id,number,street_id) VALUES ('"+building.getId()+"','"+building.getNumber()+"','"+streetId+"')");
                     statement.executeUpdate(addBuilding.toString());
+                    if (building.getFlats()!=null)
                     for(Flat flats: building.getFlats()){
-                        JDBCFlatsDAO insertFlats = new JDBCFlatsDAO();
+                        FlatsDAOImpl insertFlats = new FlatsDAOImpl();
                         insertFlats.saveOrUpdateFlat(flats);
                     }
                     
@@ -81,8 +82,9 @@ public class JDBCBuildingsDAO implements BuildingsDAO{
         */
         try (Connection connection = dataSource.getConnection()) {
                 Statement statement = connection.createStatement();
+                if (building.getFlats()!=null)
                 for(Flat flats: building.getFlats()){
-                        JDBCFlatsDAO deleteFlats = new JDBCFlatsDAO();
+                        FlatsDAOImpl deleteFlats = new FlatsDAOImpl();
                         deleteFlats.deleteFlat(flats);
                     }
                     StringBuilder query = new StringBuilder(" DELETE From buildings Where id = '" + building.getId()+"'");
@@ -128,9 +130,9 @@ public class JDBCBuildingsDAO implements BuildingsDAO{
                 StringBuilder updateBuilding = new StringBuilder("UPDATE buildings SET number='"+building.getNumber()+"', street_id='"
                         +streetId+"' WHERE id='"+building.getId()+"'");
                 statement.executeUpdate(updateBuilding.toString());
-                
+                if (building.getFlats()!=null)
                 for (Flat flat: building.getFlats()){
-                    JDBCFlatsDAO update = new JDBCFlatsDAO();
+                    FlatsDAOImpl update = new FlatsDAOImpl();
                     update.saveOrUpdateFlat(flat);
                 }
         }
@@ -250,8 +252,4 @@ public class JDBCBuildingsDAO implements BuildingsDAO{
         return result.getDouble("cost");
     }
 
-    @Override
-    public Collection<Building> findBuildings(String streetName, int number) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

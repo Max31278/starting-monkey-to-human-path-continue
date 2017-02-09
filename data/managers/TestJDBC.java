@@ -27,12 +27,12 @@ import org.xml.sax.SAXException;
 public class TestJDBC {
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException, ClassNotFoundException, SQLException{
         Connection con = null;
-        JDBCBuildingsDAO jdbcB;
+        BuildingsDAOImpl jdbcB;
         
         try{
             DataSource  dataSource = DataSourceFactory.createDataSource();
             con = dataSource.getConnection();
-            jdbcB = new JDBCBuildingsDAO();
+            jdbcB = new BuildingsDAOImpl();
             Building bild = jdbcB.findBuilding(4);
             System.out.println(jdbcB.saveOrUpdateBuilding(bild));
             System.out.println(jdbcB.deleteBuilding(bild));

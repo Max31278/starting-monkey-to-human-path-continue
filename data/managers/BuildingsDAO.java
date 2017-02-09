@@ -21,5 +21,5 @@ public interface BuildingsDAO {
     public boolean saveOrUpdateBuilding (Building
     building);
     public Collection<Building> findBuildings (String
-    streetName, int number);
+    streetName);
 }

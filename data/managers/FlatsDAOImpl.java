@@ -28,10 +28,10 @@ import org.xml.sax.SAXException;
  *
  * @author 000
  */
-public class JDBCFlatsDAO implements FlatsDAO {
+public class FlatsDAOImpl implements FlatsDAO {
      private DataSource dataSource= null;
    
-    public JDBCFlatsDAO(){
+    public FlatsDAOImpl(){
         try {
             dataSource = DataSourceFactory.createDataSource();
         } catch (IOException e) {
@@ -51,8 +51,9 @@ public class JDBCFlatsDAO implements FlatsDAO {
                                 flat.getId()+"','"+flat.getNumber()+"','"+flat.getBuilding().getId()+"','"
                         +flat.getPersonsQuantity()+"','"+flat.getArea()+"')");
                         statement.executeUpdate(addFlat.toString());
+                        if (flat.getRegistrations()!= null)
                         for (Registration registrations: flat.getRegistrations()){
-                            JDBCRegistrationsDAO insertRegistration = new JDBCRegistrationsDAO();
+                            RegistrationsDAOImpl insertRegistration = new RegistrationsDAOImpl();
                             insertRegistration.saveOrUpdateRegistration(registrations);
                         }
         }
@@ -66,8 +67,9 @@ public class JDBCFlatsDAO implements FlatsDAO {
     public boolean deleteFlat (Flat flat){
         try (Connection connection = dataSource.getConnection()) {
                 Statement statement = connection.createStatement();
+                if (flat.getRegistrations()!= null)
                  for (Registration registrations: flat.getRegistrations()){
-                            JDBCRegistrationsDAO deleteRegistration = new JDBCRegistrationsDAO();
+                            RegistrationsDAOImpl deleteRegistration = new RegistrationsDAOImpl();
                             deleteRegistration.deleteRegistration(registrations);
                         }
                     StringBuilder query = new StringBuilder(" DELETE From flats Where id = '" + flat.getId()+
@@ -88,7 +90,7 @@ public class JDBCFlatsDAO implements FlatsDAO {
                     ResultSet result = statement.executeQuery(query.toString());
                     result.next();
                     
-                    JDBCBuildingsDAO building = new JDBCBuildingsDAO();
+                    BuildingsDAOImpl building = new BuildingsDAOImpl();
                     Flat flat = new Flat();
                     flat.setArea(result.getDouble("area"));
                     flat.setBuilding(building.findBuilding(result.getInt("buildings_id")));
@@ -112,9 +114,9 @@ public class JDBCFlatsDAO implements FlatsDAO {
                         +flat.getBuilding().getId()+"', persons_quantity='"+flat.getPersonsQuantity()+"', area='"+flat.getArea()
                         +"' WHERE id='"+flat.getId()+"'");
                 statement.executeUpdate(updateBuilding.toString());
-                
+                if (flat.getRegistrations()!= null)
                 for (Registration registrations: flat.getRegistrations()){
-                    JDBCRegistrationsDAO update = new JDBCRegistrationsDAO();
+                    RegistrationsDAOImpl update = new RegistrationsDAOImpl();
                     update.saveOrUpdateRegistration(registrations);
                 }
         }
