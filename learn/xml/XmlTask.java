@@ -39,8 +39,19 @@ public class XmlTask {
     private Document doc;
     private final String path ="src/PO41/Koval/wdad/learn/xml/building.xml";
     
-    public XmlTask()  throws IOException, ParserConfigurationException, SAXException{
+    public XmlTask()  {
+        try{
         generateDocument();
+        }
+        catch( IOException ex){
+            System.out.println(ex);
+        }
+        catch(ParserConfigurationException ex){
+            System.out.println(ex);
+        }
+        catch( SAXException ex){
+            System.out.println(ex);
+        }
     }
     
     private void generateDocument() throws IOException, ParserConfigurationException, SAXException{
@@ -101,10 +112,13 @@ public class XmlTask {
                 registrationsAttributes = registrations.item(i).getAttributes();
                 if(Integer.valueOf(registrationsAttributes.getNamedItem("year").getTextContent()) >= lastYearRegistration &&
                    Integer.valueOf(registrationsAttributes.getNamedItem("month").getTextContent()) >= lastMonthRegistration){
+                    lastYearRegistration = Integer.valueOf(registrationsAttributes.getNamedItem("year").getTextContent());
+                    lastMonthRegistration = Integer.valueOf(registrationsAttributes.getNamedItem("month").getTextContent());
                     registration = registrations.item(i);
                 }
             }
         }
+        System.out.println();
         return registration;
     }
     
@@ -232,7 +246,7 @@ public class XmlTask {
     }
     
     public Flat getFlat(Building building, int flatNumber){
-        NodeList buildings = doc.getElementsByTagName("building");
+        NodeList buildings = doc.getElementsByTagName("buildings");
         NodeList flats = getFlatsBuild(buildings, building.getStreet(), building.getNumber());
         NodeList registrations = getRegistrationFlat(flats, flatNumber);
         int personsQuantity = 0;
@@ -241,7 +255,7 @@ public class XmlTask {
         
         for (int i=0; i< flats.getLength(); i++){
             if (flats.item(i).getAttributes().getNamedItem("number").getTextContent().equals(flatNumber)){
-                personsQuantity = Integer.valueOf(flats.item(i).getAttributes().getNamedItem("personsQuantity").getTextContent());
+                personsQuantity = Integer.valueOf(flats.item(i).getAttributes().getNamedItem("personsquantity").getTextContent());
                 area = Double.valueOf(flats.item(i).getAttributes().getNamedItem("area").getTextContent());
             } 
         }
