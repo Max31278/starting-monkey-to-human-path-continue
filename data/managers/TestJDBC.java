@@ -13,6 +13,7 @@ import PO41.Koval.wdad.data.storage.DataSourceFactory;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Set;
@@ -37,6 +38,8 @@ public class TestJDBC {
             System.out.println(jdbcB.saveOrUpdateBuilding(bild));
             System.out.println(jdbcB.deleteBuilding(bild));
             System.out.println(jdbcB.insertBuilding(bild));
+            Collection<Building> buildings = jdbcB.findBuildings("Московское шоссе");
+            System.out.println();
             /*bild.setId(1);
             bild.setNumber(15);
             bild.setStreetName("Набережная");

@@ -175,8 +175,8 @@ public class BuildingsDAOImpl implements BuildingsDAO{
                    ResultSet resultBuildings = statement.executeQuery(getBuildings.toString());
                     while (resultBuildings.next()) {
                         Building building = new Building();
-                        building.setId(result.getInt("id"));
-                        building.setNumber(result.getInt("number"));
+                        building.setId(resultBuildings.getInt("id"));
+                        building.setNumber(resultBuildings.getInt("number"));
                         building.setStreetName(streetName);
                         building.setFlats(getFlats(connection, building));
                         buildings.add(building);
